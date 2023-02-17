@@ -4237,9 +4237,27 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, core_1.setSecret)("gcp_sa_key");
     (0, core_1.setSecret)("firebase_token");
     try {
-        yield (0, installer_1.install)();
-        yield (0, auth_1.login)();
-        yield (0, project_1.setupProject)();
+        try {
+            yield (0, installer_1.install)();
+        }
+        catch (ex) {
+            console.error(`Error installing firebase-tools`, ex);
+            throw ex;
+        }
+        try {
+            yield (0, auth_1.login)();
+        }
+        catch (ex) {
+            console.error(`Error logging in to firebase`, ex);
+            throw ex;
+        }
+        try {
+            yield (0, project_1.setupProject)();
+        }
+        catch (ex) {
+            console.error(`Error setting up project`, ex);
+            throw ex;
+        }
     }
     catch (ex) {
         (0, core_1.setFailed)(JSON.stringify(ex));
@@ -4301,11 +4319,9 @@ const setupProject = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, core_1.startGroup)("Setup Project");
     const projectId = (0, core_1.getInput)("project_id");
     const path = (0, core_1.getInput)("project_path");
-    if (path) {
-        yield (0, exec_1.exec)(`cd ${path}`);
-    }
+    const opts = path ? { cwd: path } : undefined;
     if (projectId) {
-        yield (0, exec_1.exec)(`firebase use --add ${projectId}`);
+        yield (0, exec_1.exec)(`firebase`, ["use", `--add`, projectId], opts);
     }
     (0, core_1.endGroup)();
 });

@@ -5,13 +5,10 @@ export const setupProject = async () => {
   startGroup("Setup Project");
   const projectId = getInput("project_id");
   const path = getInput("project_path");
-
-  if (path) {
-    await exec(`cd ${path}`);
-  }
+  const opts = path ? { cwd: path } : undefined;
 
   if (projectId) {
-    await exec(`firebase use --add ${projectId}`);
+    await exec(`firebase`, ["use", `--add`, projectId], opts);
   }
   endGroup();
 };

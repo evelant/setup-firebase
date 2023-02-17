@@ -18,9 +18,26 @@ export const run = async () => {
   setSecret("firebase_token");
 
   try {
-    await install();
-    await login();
-    await setupProject();
+
+    try {
+      await install();
+    } catch (ex) {
+      console.error(`Error installing firebase-tools`, ex)
+      throw ex
+    }
+    try {
+      await login();
+    }
+    catch (ex) {
+      console.error(`Error logging in to firebase`, ex)
+      throw ex
+    }
+    try {
+      await setupProject();
+    } catch (ex) {
+      console.error(`Error setting up project`, ex)
+      throw ex
+    }
   } catch (ex) {
     setFailed(JSON.stringify(ex));
   }
